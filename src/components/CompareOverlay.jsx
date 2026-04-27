@@ -61,7 +61,7 @@ function CompareImage({ src, item, side, registerRef }) {
     if (!img || !wrapper) return;
     autoFit(img, wrapper);
     applyTransformable(img);
-    getImageDPI(img, 72, (dpi) => {
+    getImageDPI(img, (dpi) => {
       const w = img.naturalWidth || Math.round(img.width);
       const h = img.naturalHeight || Math.round(img.height);
       const size = item?.origSize
@@ -69,8 +69,8 @@ function CompareImage({ src, item, side, registerRef }) {
         : item?.file?.size
         ? formatBytes(item.file.size)
         : '-';
-      setInfo(`W: ${w} | H: ${h} | DPI: ${dpi} | Size: ${size}`);
-    });
+      setInfo(`W: ${w} | H: ${h} | DPI: ${dpi ?? 'N/A'} | Size: ${size}`);
+    }, item?.file);
   }
 
   useEffect(() => {

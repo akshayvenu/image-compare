@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Panel from './components/Panel';
 import CompareOverlay from './components/CompareOverlay';
 import './App.css';
@@ -16,6 +16,9 @@ export default function App() {
 
   // Compare mode
   const [compareOpen, setCompareOpen] = useState(false);
+  const [splitPct, setSplitPct] = useState(50);
+  const draggingRef = useRef(false);
+  const containerRef = useRef(null);
 
   function toggleTheme() {
     setTheme(t => (t === 'dark' ? 'light' : 'dark'));
@@ -99,6 +102,30 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
+  // Divider drag
+  const handleDividerPointerDown = useCallback((e) => {
+    e.preventDefault();
+    draggingRef.current = true;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+
+    function onMove(ev) {
+      if (!draggingRef.current || !containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const pct = Math.min(80, Math.max(20, ((ev.clientX - rect.left) / rect.width) * 100));
+      setSplitPct(pct);
+    }
+    function onUp() {
+      draggingRef.current = false;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+    }
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+  }, []);
+
   // Prevent default drag on images
   useEffect(() => {
     function block(e) {
@@ -113,7 +140,7 @@ export default function App() {
       <div id="appTitle">Image Compare by Aryan</div>
       <button id="themeToggle" onClick={toggleTheme}>{theme === 'dark' ? '☀️ Light' : '🌙 Dark'}</button>
 
-      <div className="container" id="normalMode">
+      <div className="container" id="normalMode" ref={containerRef}>
         <Panel
           title="Brief — Images (multiple)"
           acceptPdf={false}
@@ -123,7 +150,11 @@ export default function App() {
           onFileRemove={handleBriefRemove}
           onNext={briefNext}
           onPrev={briefPrev}
+          style={{ width: `${splitPct}%`, flex: 'none' }}
         />
+        <div className="panel-divider" onPointerDown={handleDividerPointerDown}>
+          <div className="panel-divider-handle" />
+        </div>
         <Panel
           title="Multiple — Images + PDF (pages)"
           acceptPdf={true}
@@ -134,6 +165,7 @@ export default function App() {
           onNext={multiNext}
           onPrev={multiPrev}
           onCompare={enterCompare}
+          style={{ flex: 1 }}
         />
       </div>
 

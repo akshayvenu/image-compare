@@ -103,13 +103,35 @@ body {
   display: flex;
   flex-direction: column;
   padding: 14px;
-  border-right: 1px solid var(--border);
   background: var(--bg);
   position: relative;
+  min-width: 0;
+  overflow: hidden;
 }
 
-.panel:last-child {
-  border-right: none;
+.panel-divider {
+  width: 6px;
+  flex-shrink: 0;
+  cursor: col-resize;
+  background: var(--border);
+  position: relative;
+  transition: background 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.panel-divider:hover,
+.panel-divider:active {
+  background: var(--accent);
+}
+
+.panel-divider-handle {
+  width: 2px;
+  height: 40px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.25);
+  pointer-events: none;
 }
 
 .title {
@@ -348,6 +370,76 @@ body.excel-resizing-col .excel-resize-handle-col {
 .excel-resize-handle-row:focus-visible,
 body.excel-resizing-row .excel-resize-handle-row {
   background: rgba(0, 123, 255, 0.5);
+}
+
+/* Doc viewer (Word + PPT) */
+.doc-wrapper {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  padding: 12px;
+  box-sizing: border-box;
+  background: var(--panel-bg);
+}
+
+.doc-content {
+  display: inline-block;
+  min-width: 100%;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text);
+  transform-origin: top left;
+  transition: transform 0.15s ease;
+}
+
+.doc-word .doc-content {
+  max-width: 800px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.doc-word .doc-content h1,
+.doc-word .doc-content h2,
+.doc-word .doc-content h3 {
+  color: var(--text);
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.doc-word .doc-content p {
+  margin: 8px 0;
+}
+
+.doc-word .doc-content table {
+  border-collapse: collapse;
+  margin: 8px 0;
+}
+
+.doc-word .doc-content table td,
+.doc-word .doc-content table th {
+  border: 1px solid var(--border-light);
+  padding: 6px 8px;
+}
+
+.doc-word .doc-content img {
+  max-width: 100%;
+  height: auto;
+}
+
+.doc-ppt .doc-content {
+  min-width: unset;
+}
+
+.doc-ppt .doc-content .slide {
+  margin: 0 auto 16px;
+  box-shadow: 0 2px 8px var(--shadow);
+  background: #fff;
+  overflow: hidden;
+}
+
+.doc-ppt .doc-content .slides-loadnig-msg {
+  padding: 24px;
+  color: var(--text-secondary);
+  font-size: 13px;
 }
 
 /* Info bar */

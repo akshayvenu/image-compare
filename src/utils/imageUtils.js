@@ -1,6 +1,6 @@
 export function formatBytes(bytes) {
   if (!bytes && bytes !== 0) return '-';
-  const thresh = 1024;
+  const thresh = 1000;
   if (Math.abs(bytes) < thresh) return bytes + ' B';
   const units = ['KB', 'MB', 'GB', 'TB'];
   let u = -1;
@@ -8,12 +8,49 @@ export function formatBytes(bytes) {
     bytes /= thresh;
     ++u;
   } while (Math.abs(bytes) >= thresh && u < units.length - 1);
-  // Use Math.ceil to round up to match macOS "on disk" sizing
-  const rounded = Math.ceil(bytes * 10) / 10;
-  return rounded.toFixed(1) + ' ' + units[u];
+  return (Math.round(bytes * 10) / 10).toFixed(1) + ' ' + units[u];
 }
 
-export function getImageDPI(imgEl, fallbackDPI = 72, cb) {
+// Read DPI from PNG pHYs chunk (pixels per unit, unit 1 = meter → multiply by 0.0254 for DPI)
+async function getPngDPI(file) {
+  const buf = await file.arrayBuffer();
+  const view = new DataView(buf);
+  // PNG signature is 8 bytes, then chunks: 4-len, 4-type, data, 4-crc
+  let offset = 8;
+  while (offset + 12 <= view.byteLength) {
+    const length = view.getUint32(offset);
+    const type = String.fromCharCode(
+      view.getUint8(offset + 4), view.getUint8(offset + 5),
+      view.getUint8(offset + 6), view.getUint8(offset + 7)
+    );
+    if (type === 'pHYs' && length >= 9) {
+      const ppuX = view.getUint32(offset + 8);
+      const ppuY = view.getUint32(offset + 12);
+      const unit = view.getUint8(offset + 16);
+      if (unit === 1 && ppuX > 0) {
+        // unit = meter; convert to DPI
+        const dpiX = Math.round(ppuX * 0.0254);
+        const dpiY = Math.round(ppuY * 0.0254);
+        return Math.round((dpiX + dpiY) / 2);
+      }
+      // unit = 0 (unknown/aspect ratio only) — no meaningful DPI
+      return null;
+    }
+    if (type === 'IDAT') break; // pHYs always comes before IDAT
+    offset += 12 + length;
+  }
+  return null;
+}
+
+// cb receives a number (DPI) or null (no metadata found)
+export function getImageDPI(imgEl, cb, file = null) {
+  // For PNG, read pHYs chunk directly — exif-js doesn't handle PNG DPI
+  if (file && (file.type === 'image/png' || file.name?.toLowerCase().endsWith('.png'))) {
+    getPngDPI(file).then(dpi => cb(dpi)).catch(() => cb(null));
+    return;
+  }
+
+  // For JPEG and others, use exif-js
   try {
     window.EXIF.getData(imgEl, function () {
       let x = window.EXIF.getTag(this, 'XResolution');
@@ -35,10 +72,10 @@ export function getImageDPI(imgEl, fallbackDPI = 72, cb) {
         if (unit === 3) return cb(Math.round(xn * 2.54));
       }
       if (xn) return cb(Math.round(xn));
-      return cb(fallbackDPI);
+      return cb(null);
     });
   } catch {
-    return cb(fallbackDPI);
+    return cb(null);
   }
 }
 

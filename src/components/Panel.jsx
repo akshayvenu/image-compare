@@ -2,8 +2,12 @@ import { useState, useRef, useEffect } from 'react';
 import DropZone from './DropZone';
 import ImageWrapper from './ImageWrapper';
 import ExcelViewer from './ExcelViewer';
+import DocViewer from './DocViewer';
 import { renderPdfToImages } from '../utils/pdfUtils';
 import { parseExcelToHTML } from '../utils/excelUtils';
+import { parseWordToHTML } from '../utils/wordUtils';
+import { renderPptIntoElement } from '../utils/pptUtils';
+import { formatBytes } from '../utils/imageUtils';
 
 export default function Panel({
   title,
@@ -16,6 +20,7 @@ export default function Panel({
   onFilesAdd,
   onNext,
   onPrev,
+  style,
 }) {
   const [info, setInfo] = useState('W: - | H: - | DPI: - | Size: -');
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -55,6 +60,23 @@ export default function Panel({
           console.error('Excel parse error', err);
           alert('Failed to parse Excel: ' + f.name);
         }
+      } else if (!acceptPdf && fname.endsWith('.docx')) {
+        try {
+          const htmlContent = await parseWordToHTML(f);
+          newItems.push({ type: 'word', src: htmlContent, file: f, origSize: f.size });
+        } catch (err) {
+          console.error('Word parse error', err);
+          alert('Failed to parse Word: ' + f.name);
+        }
+      } else if (!acceptPdf && fname.endsWith('.pptx')) {
+        newItems.push({
+          type: 'ppt',
+          renderFn: (el) => renderPptIntoElement(f, el),
+          file: f,
+          origSize: f.size,
+        });
+      } else if (!acceptPdf && (fname.endsWith('.doc') || fname.endsWith('.ppt'))) {
+        alert('Legacy .doc/.ppt are not supported. Please save as .docx/.pptx: ' + f.name);
       } else if (f.type && f.type.startsWith('image/')) {
         const url = URL.createObjectURL(f);
         newItems.push({ type: 'image', src: url, file: f, origSize: f.size });
@@ -85,13 +107,13 @@ export default function Panel({
 
   const accept = acceptPdf
     ? 'application/pdf,image/*'
-    : 'image/*,.xlsx,.xlsm,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel.sheet.macroEnabled.12';
+    : 'image/*,.xlsx,.xlsm,.docx,.pptx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel.sheet.macroEnabled.12,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation';
   const dropLabel = acceptPdf
     ? 'Click or drag images / PDFs here (multiple)'
-    : 'Click or drag images or Excel files here (multiple)';
+    : 'Click or drag images, Excel, Word, or PowerPoint here (multiple)';
 
   return (
-    <div className="panel">
+    <div className="panel" style={style}>
       <div className="title">{title}</div>
 
       <DropZone accept={accept} multiple label={dropLabel} onFiles={handleFiles} />
@@ -99,7 +121,21 @@ export default function Panel({
       <div className="image-wrapper" ref={wrapperRef}>
         {currentItem && (
           currentItem.type === 'excel' ? (
-            <ExcelViewer key={currentItem.src} htmlContent={currentItem.src} />
+            <ExcelViewer key={currentItem.src} htmlContent={currentItem.src} wrapperRef={wrapperRef} />
+          ) : currentItem.type === 'word' ? (
+            <DocViewer
+              key={'word-' + index}
+              kind="word"
+              htmlContent={currentItem.src}
+              wrapperRef={wrapperRef}
+            />
+          ) : currentItem.type === 'ppt' ? (
+            <DocViewer
+              key={'ppt-' + index}
+              kind="ppt"
+              renderFn={currentItem.renderFn}
+              wrapperRef={wrapperRef}
+            />
           ) : (
             <ImageWrapper
               key={currentItem.src + index}
@@ -121,7 +157,20 @@ export default function Panel({
 
       <div className="info-bar">
         {currentItem?.type === 'excel' ? (
-          <span>📊 {currentItem?.file?.name || 'Excel'}</span>
+          <>
+            <span>📊 {currentItem?.file?.name || 'Excel'}</span>
+            <span>Size: {formatBytes(currentItem?.origSize)}</span>
+          </>
+        ) : currentItem?.type === 'word' ? (
+          <>
+            <span>📝 {currentItem?.file?.name || 'Word'}</span>
+            <span>Size: {formatBytes(currentItem?.origSize)}</span>
+          </>
+        ) : currentItem?.type === 'ppt' ? (
+          <>
+            <span>🎞 {currentItem?.file?.name || 'PowerPoint'}</span>
+            <span>Size: {formatBytes(currentItem?.origSize)}</span>
+          </>
         ) : (
           <>
             <span>📄 {currentItem?.file?.name || 'No file'}</span>
@@ -146,12 +195,14 @@ export default function Panel({
           >
             Next →
           </button>
-          {currentItem?.type === 'image' && (
+          {['image', 'excel', 'word', 'ppt'].includes(currentItem?.type) && (
             <>
               <button onClick={() => wrapperRef.current?._zoomBy?.(1.2)}>🔍+ Zoom In</button>
               <button onClick={() => wrapperRef.current?._zoomBy?.(0.8)}>🔍- Zoom Out</button>
               <button onClick={() => wrapperRef.current?._reset?.()}>⟳ Reset</button>
-              <button onClick={enterFullscreen}>⛶ Fullscreen</button>
+              {currentItem?.type === 'image' && (
+                <button onClick={enterFullscreen}>⛶ Fullscreen</button>
+              )}
             </>
           )}
           <span className="counter">

@@ -68,7 +68,7 @@ export default function ImageWrapper({ item, onInfoChange, wrapperRef: externalW
     if (!img || !wrapper) return;
     autoFit(img, wrapper);
     applyTransformable(img);
-    getImageDPI(img, 72, (dpi) => {
+    getImageDPI(img, (dpi) => {
       const w = img.naturalWidth || Math.round(img.width);
       const h = img.naturalHeight || Math.round(img.height);
       const size = item?.origSize
@@ -76,8 +76,8 @@ export default function ImageWrapper({ item, onInfoChange, wrapperRef: externalW
         : item?.file?.size
         ? formatBytes(item.file.size)
         : '-';
-      onInfoChange?.(`W: ${w} | H: ${h} | DPI: ${dpi} | Size: ${size}`);
-    });
+      onInfoChange?.(`W: ${w} | H: ${h} | DPI: ${dpi ?? 'N/A'} | Size: ${size}`);
+    }, item?.file);
   }
 
   // expose zoom/reset via ref on the wrapper
