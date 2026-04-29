@@ -92,7 +92,7 @@ async function extractMetaFromPdf(pdf, file) {
     bleedBox,
     cropBox,
     simulationProfile: '—',
-    resolution: '300 DPI',
+    resolution: '—',
     tac: null,
     fileName: file.name,
     fileSize: file.size,

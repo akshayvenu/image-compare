@@ -3,7 +3,6 @@ import DropZone from './DropZone';
 import ImageWrapper from './ImageWrapper';
 import ExcelViewer from './ExcelViewer';
 import DocViewer from './DocViewer';
-import PdfInfoPanel from './PdfInfoPanel';
 import { renderPdfToImages } from '../utils/pdfUtils';
 import { parseExcelToHTML } from '../utils/excelUtils';
 import { parseWordToHTML } from '../utils/wordUtils';
@@ -29,8 +28,6 @@ export default function Panel({
 }) {
   const [info, setInfo] = useState('');
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [pdfMeta, setPdfMeta] = useState(null);
-  const [showMorePdf, setShowMorePdf] = useState(false);
   const wrapperRef = useRef(null);
   const dropZoneRef = useRef(null);
   const thumbStripRef = useRef(null);
@@ -39,14 +36,7 @@ export default function Panel({
 
   useEffect(() => {
     setInfo('');
-    setShowMorePdf(false);
-
-    if (side === 'multi' && currentItem?.isPdfPage && currentItem?.pdfMeta) {
-      setPdfMeta(currentItem.pdfMeta);
-    } else {
-      setPdfMeta(null);
-    }
-  }, [index, files, side, currentItem]);
+  }, [index, files]);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -244,14 +234,6 @@ export default function Panel({
                 </div>
               ))}
             </div>
-          )}
-
-          {pdfMeta && side === 'multi' && (
-            <PdfInfoPanel
-              metadata={pdfMeta}
-              showMore={showMorePdf}
-              onToggleMore={() => setShowMorePdf(!showMorePdf)}
-            />
           )}
 
           <div className="image-title-bar">
