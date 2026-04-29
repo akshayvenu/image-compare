@@ -6,35 +6,46 @@ function PdfCard({ label, value, subtitle, badge }) {
       {subtitle && <div className="pdf-info-subtitle">{subtitle}</div>}
       {badge && (
         <div className={`pdf-info-badge ${badge.type}`}>
-          {badge.icon} {badge.text}
+          {badge.text}
         </div>
       )}
     </div>
   );
 }
 
+function getTacBadge(tac) {
+  if (tac === null || tac === undefined) return null;
+  if (tac > 300) return { type: 'red', text: 'Over limit' };
+  if (tac >= 280) return { type: 'yellow', text: 'Caution' };
+  return { type: 'green', text: 'OK' };
+}
+
+function getResBadge(res) {
+  if (!res || res === '—') return null;
+  const dpi = parseInt(res, 10);
+  if (Number.isNaN(dpi)) return null;
+  if (dpi < 300) return { type: 'yellow', text: 'Low DPI' };
+  return { type: 'green', text: 'OK' };
+}
+
+function formatBytes(bytes) {
+  if (!bytes) return '—';
+  const units = ['B', 'KB', 'MB', 'GB'];
+  let size = bytes;
+  let idx = 0;
+  while (size >= 1024 && idx < units.length - 1) {
+    size /= 1024;
+    idx++;
+  }
+  return `${size.toFixed(2)} ${units[idx]}`;
+}
+
 export default function PdfInfoPanel({ metadata, showMore, onToggleMore }) {
   if (!metadata) return null;
 
-  const getTacBadge = (tac) => {
-    if (tac === null || tac === undefined) return null;
-    if (tac > 300) return { type: 'red', icon: '⚠️', text: 'High' };
-    if (tac >= 280) return { type: 'yellow', icon: '⚡', text: 'Caution' };
-    return { type: 'green', icon: '✓', text: 'OK' };
-  };
-
-  const getResBadge = (res) => {
-    if (res === '—') return null;
-    const dpi = parseInt(res);
-    if (dpi < 300) return { type: 'yellow', icon: '⚠️', text: 'Low' };
-    return { type: 'green', icon: '✓', text: 'OK' };
-  };
-
   return (
     <div className="pdf-info-panel">
-      <div className="pdf-info-title">
-        <span>📋 PDF Preflight</span>
-      </div>
+      <div className="pdf-info-title">PDF Preflight</div>
 
       <div className="pdf-info-grid">
         <PdfCard
@@ -43,9 +54,9 @@ export default function PdfInfoPanel({ metadata, showMore, onToggleMore }) {
           subtitle="file standard"
         />
         <PdfCard
-          label="Simulation Profile"
+          label="Color Profile"
           value={metadata.simulationProfile}
-          subtitle="color profile"
+          subtitle="simulation profile"
         />
         <PdfCard
           label="Resolution"
@@ -66,13 +77,13 @@ export default function PdfInfoPanel({ metadata, showMore, onToggleMore }) {
         <PdfCard
           label="TAC"
           value={metadata.tac ? `${metadata.tac}%` : '—'}
-          subtitle="ink limit check"
+          subtitle="ink limit"
           badge={getTacBadge(metadata.tac)}
         />
       </div>
 
       <div className="pdf-info-toggle" onClick={onToggleMore}>
-        {showMore ? '▼' : '▶'} More Details ({metadata.pageCount} page{metadata.pageCount !== 1 ? 's' : ''})
+        {showMore ? '▾' : '▸'} {showMore ? 'Hide details' : `More details (${metadata.pageCount} page${metadata.pageCount !== 1 ? 's' : ''})`}
       </div>
 
       {showMore && (
@@ -101,16 +112,4 @@ export default function PdfInfoPanel({ metadata, showMore, onToggleMore }) {
       )}
     </div>
   );
-}
-
-function formatBytes(bytes) {
-  if (!bytes) return '—';
-  const units = ['B', 'KB', 'MB', 'GB'];
-  let size = bytes;
-  let idx = 0;
-  while (size >= 1024 && idx < units.length - 1) {
-    size /= 1024;
-    idx++;
-  }
-  return `${size.toFixed(2)} ${units[idx]}`;
 }

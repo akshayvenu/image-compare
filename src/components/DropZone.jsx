@@ -1,19 +1,26 @@
-import { useRef } from 'react';
+import { useRef, forwardRef, useImperativeHandle } from 'react';
 
-export default function DropZone({ accept, multiple, label, onFiles }) {
+const DropZone = forwardRef(function DropZone(
+  { accept, multiple, label, hint, onFiles, className = '' },
+  ref
+) {
   const inputRef = useRef(null);
+
+  useImperativeHandle(ref, () => ({
+    open: () => inputRef.current?.click(),
+  }));
 
   function handleDrop(e) {
     e.preventDefault();
-    e.currentTarget.style.background = 'transparent';
+    e.currentTarget.classList.remove('is-dragover');
     onFiles(e.dataTransfer.files);
   }
   function handleDragOver(e) {
     e.preventDefault();
-    e.currentTarget.style.background = 'var(--drop-bg)';
+    e.currentTarget.classList.add('is-dragover');
   }
   function handleDragLeave(e) {
-    e.currentTarget.style.background = 'transparent';
+    e.currentTarget.classList.remove('is-dragover');
   }
   function handleChange() {
     onFiles(inputRef.current.files);
@@ -23,13 +30,14 @@ export default function DropZone({ accept, multiple, label, onFiles }) {
   return (
     <>
       <div
-        className="drop-zone"
+        className={`drop-zone ${className}`}
         onClick={() => inputRef.current.click()}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
       >
-        {label}
+        <div className="drop-zone-text">{label}</div>
+        {hint && <div className="drop-zone-hint">{hint}</div>}
       </div>
       <input
         ref={inputRef}
@@ -41,4 +49,6 @@ export default function DropZone({ accept, multiple, label, onFiles }) {
       />
     </>
   );
-}
+});
+
+export default DropZone;
