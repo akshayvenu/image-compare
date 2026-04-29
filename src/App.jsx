@@ -138,8 +138,11 @@ export default function App() {
   return (
     <div className={theme === 'light' ? 'light' : ''}>
       <div id="headerBar">
+        <div />
         <div id="appTitle">Image Compare by Aryan</div>
-        <button id="themeToggle" onClick={toggleTheme}>{theme === 'dark' ? '☀️ Light' : '🌙 Dark'}</button>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <button id="themeToggle" onClick={toggleTheme}>{theme === 'dark' ? '☀️ Light' : '🌙 Dark'}</button>
+        </div>
       </div>
 
       <div className="container" id="normalMode" ref={containerRef}>

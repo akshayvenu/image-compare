@@ -175,11 +175,6 @@ export default function Panel({
               + Add
             </button>
           )}
-          {side === 'multi' && onCompare && !isEmpty && (
-            <button className="compare-btn" onClick={onCompare} title="Compare side by side">
-              ⇆ Compare
-            </button>
-          )}
         </div>
       </div>
 
@@ -259,18 +254,15 @@ export default function Panel({
             />
           )}
 
+          <div className="image-title-bar">
+            <span className="image-title-icon">{getFileIcon()}</span>
+            <span className="image-title-name" title={getDisplayName()}>{getDisplayName()}</span>
+          </div>
           <div className="info-bar">
-            <span className="info-name" title={getDisplayName()}>
-              <span className="info-name-icon">{getFileIcon()}</span>
-              {getDisplayName()}
-            </span>
-            {info && <span className="info-divider">·</span>}
             {info && <span className="info-meta">{info}</span>}
+            {info && currentItem?.origSize && <span className="info-divider">·</span>}
             {currentItem?.origSize && (
-              <>
-                <span className="info-divider">·</span>
-                <span className="info-meta">{formatBytes(currentItem.origSize)}</span>
-              </>
+              <span className="info-meta">{formatBytes(currentItem.origSize)}</span>
             )}
           </div>
 

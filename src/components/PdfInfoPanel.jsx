@@ -75,6 +75,11 @@ export default function PdfInfoPanel({ metadata, showMore, onToggleMore }) {
           subtitle="bleed area"
         />
         <PdfCard
+          label="Page Size"
+          value={`${metadata.widthMm} × ${metadata.heightMm} mm`}
+          subtitle="width × height"
+        />
+        <PdfCard
           label="TAC"
           value={metadata.tac ? `${metadata.tac}%` : '—'}
           subtitle="ink limit"
@@ -88,21 +93,6 @@ export default function PdfInfoPanel({ metadata, showMore, onToggleMore }) {
 
       {showMore && (
         <div className="pdf-info-extra">
-          <PdfCard
-            label="CropBox"
-            value={metadata.cropBox}
-            subtitle="crop area"
-          />
-          <PdfCard
-            label="Width"
-            value={`${metadata.widthMm} mm`}
-            subtitle="page width"
-          />
-          <PdfCard
-            label="Height"
-            value={`${metadata.heightMm} mm`}
-            subtitle="page height"
-          />
           <PdfCard
             label="File Size"
             value={formatBytes(metadata.fileSize)}
