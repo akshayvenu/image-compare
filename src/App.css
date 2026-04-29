@@ -521,6 +521,9 @@ body.excel-resizing-row .excel-resize-handle-row {
   gap: 8px;
   padding: 2px 4px 4px;
   min-height: 22px;
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
 }
 
 .info-divider {
@@ -538,6 +541,15 @@ body.excel-resizing-row .excel-resize-handle-row {
   padding: 2px 7px;
   border-radius: 5px;
   border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.info-meta-main {
+  max-width: 100%;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: center;
+  line-height: 1.45;
 }
 
 /* ─────────  Controls / toolbar  ───────── */

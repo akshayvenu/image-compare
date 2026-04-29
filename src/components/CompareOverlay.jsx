@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
-import { autoFit, setTransform, getImageDPI, formatBytes } from '../utils/imageUtils';
+import { autoFit, setTransform, getImageDPI, formatBytes, formatImageDPI } from '../utils/imageUtils';
 
 function CompareImage({ src, item, side, registerRef }) {
   const imgRef = useRef(null);
@@ -69,7 +69,7 @@ function CompareImage({ src, item, side, registerRef }) {
         : item?.file?.size
         ? formatBytes(item.file.size)
         : '-';
-      setInfo(`Dimensions: ${w} × ${h} | Resolution: ${dpi ?? 'N/A'} | Size: ${size}`);
+      setInfo(`Dimensions: ${w} × ${h} | DPI: ${formatImageDPI(dpi)} | Size: ${size}`);
     }, item?.file);
   }
 

@@ -1,5 +1,5 @@
 import { useRef, useEffect, useCallback } from 'react';
-import { autoFit, setTransform, getImageDPI, formatBytes } from '../utils/imageUtils';
+import { autoFit, setTransform, getImageDPI, formatBytes, formatImageDPI } from '../utils/imageUtils';
 
 export default function ImageWrapper({ item, onInfoChange, wrapperRef: externalWrapperRef }) {
   const localWrapperRef = useRef(null);
@@ -76,7 +76,7 @@ export default function ImageWrapper({ item, onInfoChange, wrapperRef: externalW
         : item?.file?.size
         ? formatBytes(item.file.size)
         : '-';
-      onInfoChange?.(`Dimensions: ${w} × ${h} | Resolution: ${dpi ?? 'N/A'} | Size: ${size}`);
+      onInfoChange?.(`Dimensions: ${w} × ${h} | DPI: ${formatImageDPI(dpi)} | Size: ${size}`);
     }, item?.file);
   }
 

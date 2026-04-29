@@ -259,11 +259,11 @@ export default function Panel({
             <span className="image-title-name" title={getDisplayName()}>{getDisplayName()}</span>
           </div>
           <div className="info-bar">
-            {info && <span className="info-meta">{info}</span>}
-            {info && currentItem?.origSize && <span className="info-divider">·</span>}
-            {currentItem?.origSize && (
+            {info ? (
+              <span className="info-meta info-meta-main">{info}</span>
+            ) : currentItem?.origSize ? (
               <span className="info-meta">{formatBytes(currentItem.origSize)}</span>
-            )}
+            ) : null}
           </div>
 
           <div className="controls">

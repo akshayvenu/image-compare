@@ -11,6 +11,10 @@ export function formatBytes(bytes) {
   return (Math.round(bytes * 10) / 10).toFixed(1) + ' ' + units[u];
 }
 
+export function formatImageDPI(dpi = null) {
+  return dpi ? `${dpi} DPI` : 'No DPI metadata';
+}
+
 // Read DPI from PNG pHYs chunk (pixels per unit, unit 1 = meter → multiply by 0.0254 for DPI)
 async function getPngDPI(file) {
   const buf = await file.arrayBuffer();
