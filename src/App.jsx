@@ -137,11 +137,14 @@ export default function App() {
 
   return (
     <div className={theme === 'light' ? 'light' : ''}>
-      <div id="appTitle">Image Compare by Aryan</div>
-      <button id="themeToggle" onClick={toggleTheme}>{theme === 'dark' ? '☀️ Light' : '🌙 Dark'}</button>
+      <div id="headerBar">
+        <div id="appTitle">Image Compare by Aryan</div>
+        <button id="themeToggle" onClick={toggleTheme}>{theme === 'dark' ? '☀️ Light' : '🌙 Dark'}</button>
+      </div>
 
       <div className="container" id="normalMode" ref={containerRef}>
         <Panel
+          side="brief"
           title="Brief — Images (multiple)"
           acceptPdf={false}
           files={briefFiles}
@@ -156,6 +159,7 @@ export default function App() {
           <div className="panel-divider-handle" />
         </div>
         <Panel
+          side="multi"
           title="Multiple — Images + PDF (pages)"
           acceptPdf={true}
           files={multiFiles}

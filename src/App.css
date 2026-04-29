@@ -1,31 +1,37 @@
 :root {
-  --bg: #1a1a1a;
-  --panel-bg: #0f0f0f;
-  --text: #fff;
-  --text-secondary: #b0b0b0;
-  --border: #333;
-  --border-light: #444;
+  --bg: #131419;
+  --panel-bg: #1c1e26;
+  --text: #e8e8e8;
+  --text-secondary: #a8a8a8;
+  --border: #2d2f38;
+  --border-light: #3a3d47;
   --accent: #007bff;
   --accent-hover: #0056d0;
   --accent-light: #1e9fff;
-  --drop-bg: #2a2a2a;
-  --shadow: rgba(0, 0, 0, 0.3);
-  --shadow-light: rgba(0, 0, 0, 0.15);
+  --drop-bg: #242933;
+  --shadow: rgba(0, 0, 0, 0.4);
+  --shadow-light: rgba(0, 0, 0, 0.2);
+  --warning: #ff9f3d;
+  --danger: #ff6b6b;
+  --success: #51cf66;
 }
 
 .light {
-  --bg: #f8f9fa;
+  --bg: #f5f6f7;
   --panel-bg: #fff;
   --text: #1a1a1a;
   --text-secondary: #666;
-  --border: #e0e0e0;
+  --border: #ddd;
   --border-light: #f0f0f0;
-  --drop-bg: #f0f3f7;
+  --drop-bg: #f8f9fb;
   --accent: #007bff;
   --accent-hover: #0056d0;
   --accent-light: #1e9fff;
   --shadow: rgba(0, 0, 0, 0.1);
   --shadow-light: rgba(0, 0, 0, 0.05);
+  --warning: #ff9f3d;
+  --danger: #ff6b6b;
+  --success: #51cf66;
 }
 
 * {
@@ -44,24 +50,34 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* App title */
-#appTitle {
+/* Header bar */
+#headerBar {
   position: fixed;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 15px;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  background: rgba(19, 20, 25, 0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 1001;
+  box-shadow: 0 2px 12px var(--shadow-light);
+}
+
+#appTitle {
+  position: relative;
+  font-size: 16px;
   color: var(--text);
-  opacity: 1;
-  pointer-events: none;
   font-weight: 700;
   white-space: nowrap;
-  letter-spacing: 0.4px;
-  background: var(--bg);
-  padding: 4px 12px;
-  border-radius: 6px;
-  box-shadow: 0 2px 8px var(--shadow-light);
+  letter-spacing: 0.5px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* Theme toggle */
@@ -96,6 +112,8 @@ body {
   display: flex;
   height: 100vh;
   gap: 0;
+  margin-top: 48px;
+  height: calc(100vh - 48px);
 }
 
 .panel {
@@ -136,17 +154,21 @@ body {
 
 .title {
   text-align: center;
-  font-size: 15px;
+  font-size: 14px;
   margin-bottom: 8px;
   color: var(--text);
   font-weight: 700;
   letter-spacing: 0.3px;
   opacity: 1;
-  padding: 4px 0;
+  padding: 8px 14px;
   background: linear-gradient(135deg, var(--accent), var(--accent-light));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  border-radius: 20px;
+  display: inline-block;
+  align-self: center;
+  color: #fff;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: unset;
+  background-clip: unset;
 }
 
 .title-row {
@@ -175,40 +197,49 @@ body {
 /* Drop zone */
 .drop-zone {
   border: 2px dashed var(--border-light);
-  border-radius: 8px;
-  padding: 12px 16px;
+  border-radius: 10px;
+  padding: 16px 20px;
   text-align: center;
   cursor: pointer;
-  background: var(--drop-bg);
+  background: linear-gradient(135deg, var(--drop-bg), rgba(0, 123, 255, 0.02));
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: 13px;
   transition: all 0.3s ease;
   font-weight: 500;
   position: relative;
-  min-height: 40px;
+  min-height: 50px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 6px;
 }
 
 .drop-zone::before {
-  content: '⬆️';
-  display: inline-block;
-  font-size: 14px;
-  margin-right: 6px;
+  content: '📤';
+  display: block;
+  font-size: 24px;
   transition: transform 0.3s ease;
 }
 
+.drop-zone::after {
+  content: 'Click to upload or drag files here';
+  display: block;
+  font-size: 11px;
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
 .drop-zone:hover {
-  background: linear-gradient(135deg, rgba(0, 123, 255, 0.12), rgba(30, 159, 255, 0.08));
+  background: linear-gradient(135deg, rgba(0, 123, 255, 0.08), rgba(30, 159, 255, 0.04));
   border-color: var(--accent);
   color: var(--accent);
-  box-shadow: 0 2px 8px var(--shadow-light);
+  box-shadow: 0 4px 12px var(--shadow-light);
   transform: translateY(-1px);
 }
 
 .drop-zone:hover::before {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
 }
 
 /* Image wrapper */
@@ -217,16 +248,20 @@ body {
   margin-top: 8px;
   margin-bottom: 8px;
   background: var(--panel-bg);
-  border: 2px solid var(--border);
-  border-radius: 8px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
   position: relative;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: inset 0 1px 4px var(--shadow-light);
-  transition: border-color 0.2s ease;
+  box-shadow: inset 0 2px 8px var(--shadow-light);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   min-height: 200px;
+}
+
+.image-wrapper:hover {
+  box-shadow: inset 0 2px 8px var(--shadow-light), 0 0 1px var(--border);
 }
 
 .transformable {
@@ -448,14 +483,14 @@ body.excel-resizing-row .excel-resize-handle-row {
   margin-bottom: 6px;
   font-size: 11px;
   color: var(--text-secondary);
-  padding: 8px 10px;
-  background: linear-gradient(135deg, var(--drop-bg), rgba(0, 123, 255, 0.03));
-  border-radius: 6px;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, var(--drop-bg), rgba(0, 123, 255, 0.02));
+  border-radius: 8px;
   font-weight: 500;
   border-left: 3px solid var(--accent);
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
   justify-content: space-between;
   box-shadow: 0 1px 3px var(--shadow-light);
@@ -466,13 +501,14 @@ body.excel-resizing-row .excel-resize-handle-row {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 3px 6px;
-  background: rgba(0, 123, 255, 0.08);
-  border-radius: 3px;
+  padding: 4px 8px;
+  background: rgba(0, 123, 255, 0.1);
+  border-radius: 4px;
   color: var(--accent);
   font-weight: 600;
   font-size: 11px;
   white-space: nowrap;
+  font-family: 'Monaco', 'Courier New', monospace;
 }
 
 /* Controls */
@@ -490,9 +526,9 @@ body.excel-resizing-row .excel-resize-handle-row {
 }
 
 button {
-  padding: 8px 12px;
+  padding: 9px 14px;
   margin: 2px;
-  border-radius: 6px;
+  border-radius: 8px;
   border: 0;
   background: linear-gradient(135deg, var(--accent), var(--accent-light));
   color: #fff;
@@ -500,12 +536,15 @@ button {
   font-size: 12px;
   font-weight: 600;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 6px var(--shadow-light);
+  box-shadow: 0 2px 8px var(--shadow-light);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 button:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px var(--shadow);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px var(--shadow);
   background: linear-gradient(135deg, var(--accent-hover), var(--accent));
 }
 
@@ -712,6 +751,179 @@ button.small {
 
 .fullscreen-controls button.exit-fs:hover {
   background: linear-gradient(135deg, #ff5252, #e63946);
+}
+
+/* Thumbnail strip */
+.thumbnail-strip {
+  margin-top: 8px;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 4px 0;
+  border-radius: 8px;
+  scroll-behavior: smooth;
+}
+
+.thumbnail-strip::-webkit-scrollbar {
+  height: 4px;
+}
+
+.thumbnail-strip::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.thumbnail-strip::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.thumbnail-strip::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-light);
+}
+
+.thumbnail {
+  flex-shrink: 0;
+  width: 50px;
+  height: 50px;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  background: var(--panel-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+.thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumbnail:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px var(--shadow-light);
+  transform: scale(1.05);
+}
+
+.thumbnail.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 12px var(--accent);
+}
+
+/* PDF Info Panel */
+.pdf-info-panel {
+  margin-top: 10px;
+  padding: 12px;
+  background: linear-gradient(135deg, var(--drop-bg), rgba(0, 123, 255, 0.02));
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px var(--shadow-light);
+}
+
+.pdf-info-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pdf-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.pdf-info-card {
+  background: rgba(0, 123, 255, 0.06);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pdf-info-label {
+  font-size: 10px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.pdf-info-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  font-family: 'Monaco', 'Courier New', monospace;
+  word-break: break-word;
+}
+
+.pdf-info-subtitle {
+  font-size: 10px;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.pdf-info-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  margin-top: 2px;
+  width: fit-content;
+}
+
+.pdf-info-badge.green {
+  background: rgba(81, 207, 102, 0.2);
+  color: var(--success);
+}
+
+.pdf-info-badge.yellow {
+  background: rgba(255, 159, 61, 0.2);
+  color: var(--warning);
+}
+
+.pdf-info-badge.red {
+  background: rgba(255, 107, 107, 0.2);
+  color: var(--danger);
+}
+
+.pdf-info-toggle {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--accent);
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pdf-info-toggle:hover {
+  color: var(--accent-light);
+}
+
+.pdf-info-extra {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
 }
 
 /* Responsive */

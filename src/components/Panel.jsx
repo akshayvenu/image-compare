@@ -3,13 +3,15 @@ import DropZone from './DropZone';
 import ImageWrapper from './ImageWrapper';
 import ExcelViewer from './ExcelViewer';
 import DocViewer from './DocViewer';
-import { renderPdfToImages } from '../utils/pdfUtils';
+import PdfInfoPanel from './PdfInfoPanel';
+import { renderPdfToImages, extractPdfMetadata } from '../utils/pdfUtils';
 import { parseExcelToHTML } from '../utils/excelUtils';
 import { parseWordToHTML } from '../utils/wordUtils';
 import { renderPptIntoElement } from '../utils/pptUtils';
 import { formatBytes } from '../utils/imageUtils';
 
 export default function Panel({
+  side = 'brief',
   title,
   acceptPdf = false,
   onCompare,
@@ -22,13 +24,26 @@ export default function Panel({
   onPrev,
   style,
 }) {
-  const [info, setInfo] = useState('W: - | H: - | DPI: - | Size: -');
+  const [info, setInfo] = useState('Dimensions: - × - | Resolution: - | Size: -');
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [pdfMeta, setPdfMeta] = useState(null);
+  const [showMorePdf, setShowMorePdf] = useState(false);
   const wrapperRef = useRef(null);
+  const thumbStripRef = useRef(null);
 
   useEffect(() => {
-    setInfo('W: - | H: - | DPI: - | Size: -');
-  }, [index]);
+    setInfo('Dimensions: - × - | Resolution: - | Size: -');
+    setPdfMeta(null);
+    setShowMorePdf(false);
+
+    const currentItem = index >= 0 && index < files.length ? files[index] : null;
+    if (side === 'multi' && currentItem?.type === 'image' && currentItem?.file?.name?.endsWith('.pdf')) {
+      extractPdfMetadata(currentItem.file).then(setPdfMeta).catch(err => {
+        console.error('PDF metadata extraction error:', err);
+        setPdfMeta(null);
+      });
+    }
+  }, [index, files, side]);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -114,7 +129,9 @@ export default function Panel({
 
   return (
     <div className="panel" style={style}>
-      <div className="title">{title}</div>
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
+        <div className="title">{title}</div>
+      </div>
 
       <DropZone accept={accept} multiple label={dropLabel} onFiles={handleFiles} />
 
@@ -155,21 +172,48 @@ export default function Panel({
         )}
       </div>
 
+      {files.length > 1 && (
+        <div className="thumbnail-strip" ref={thumbStripRef}>
+          {files.map((file, i) => (
+            <div
+              key={i}
+              className={`thumbnail ${i === index ? 'active' : ''}`}
+              onClick={() => i !== index && onNext && onPrev && (i > index ? onNext() : onPrev())}
+              title={`Page ${i + 1}`}
+            >
+              {file.type === 'image' && file.src ? (
+                <img src={file.src} alt={`Page ${i + 1}`} />
+              ) : (
+                <span>{i + 1}</span>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {pdfMeta && side === 'multi' && (
+        <PdfInfoPanel
+          metadata={pdfMeta}
+          showMore={showMorePdf}
+          onToggleMore={() => setShowMorePdf(!showMorePdf)}
+        />
+      )}
+
       <div className="info-bar">
         {currentItem?.type === 'excel' ? (
           <>
             <span>📊 {currentItem?.file?.name || 'Excel'}</span>
-            <span>Size: {formatBytes(currentItem?.origSize)}</span>
+            <span>Size: {formatBytes(currentItem?.origSize)} | {info}</span>
           </>
         ) : currentItem?.type === 'word' ? (
           <>
             <span>📝 {currentItem?.file?.name || 'Word'}</span>
-            <span>Size: {formatBytes(currentItem?.origSize)}</span>
+            <span>Size: {formatBytes(currentItem?.origSize)} | {info}</span>
           </>
         ) : currentItem?.type === 'ppt' ? (
           <>
             <span>🎞 {currentItem?.file?.name || 'PowerPoint'}</span>
-            <span>Size: {formatBytes(currentItem?.origSize)}</span>
+            <span>Size: {formatBytes(currentItem?.origSize)} | {info}</span>
           </>
         ) : (
           <>

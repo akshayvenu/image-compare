@@ -76,7 +76,7 @@ export default function ImageWrapper({ item, onInfoChange, wrapperRef: externalW
         : item?.file?.size
         ? formatBytes(item.file.size)
         : '-';
-      onInfoChange?.(`W: ${w} | H: ${h} | DPI: ${dpi ?? 'N/A'} | Size: ${size}`);
+      onInfoChange?.(`Dimensions: ${w} × ${h} | Resolution: ${dpi ?? 'N/A'} | Size: ${size}`);
     }, item?.file);
   }
 
