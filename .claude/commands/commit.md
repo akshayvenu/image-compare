@@ -36,11 +36,6 @@ description: Stage all changes and commit with a conventional commit message
    - Explain what changed and why, not how
    - Bullet points OK, max 72 chars per line
 
-5. Always append:
-   ```
-   Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
-   ```
-
-6. Run `git add .` to stage everything, then run `git commit -m "<message>"` using a HEREDOC so multi-line messages are formatted correctly.
+5. Run `git add .` to stage everything, then run `git commit -m "<message>"` using a HEREDOC so multi-line messages are formatted correctly. Do not include any Co-Authored-By trailer.
 
 Do not print anything — only make the tool calls.
