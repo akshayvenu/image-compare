@@ -1,6 +1,6 @@
 ---
-allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git diff:*), Bash(git log:*)Bash(git commit:*)
-description: Stage and commit changes with a conventional commit message
+allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git commit:*)
+description: Stage all changes and commit with a conventional commit message
 ---
 
 ## Context
@@ -12,36 +12,35 @@ description: Stage and commit changes with a conventional commit message
 
 ## Your task
 
-1. Analyze the diff and determine the **type** of change:
-   - `feat` — new feature or capability
+1. Analyze the diff and pick the **type**:
+   - `feat` — new feature
    - `fix` — bug fix
-   - `refactor` — restructuring without behavior change
-   - `style` — formatting, naming, visual tweaks (no logic change)
+   - `refactor` — restructure without behavior change
+   - `style` — formatting / visual tweaks, no logic change
    - `docs` — documentation only
    - `chore` — build, deps, config, tooling
    - `perf` — performance improvement
    - `test` — adding or fixing tests
 
-2. Pick an optional **scope** (e.g. `panel`, `overlay`, `pdf`, `excel`, `dpi`) if the change is clearly scoped to one area.
+2. Pick an optional **scope** if the change is clearly scoped to one area (e.g. `panel`, `overlay`, `pdf`, `excel`, `dpi`).
 
 3. Write a **subject line** (max 72 chars):
    ```
    <type>(<scope>): <imperative short description>
    ```
-   - Use imperative mood: "add", "fix", "remove", not "added" or "fixes"
-   - No period at the end
-   - No filler words ("just", "some", "a few changes")
+   - Imperative mood: "add", "fix", "remove" — not "added" / "fixes"
+   - No trailing period
+   - No filler words
 
-4. If the change warrants it, add a **body** (one blank line after subject):
-   - What changed and why (not how — the diff shows how)
-   - Bullet points are fine for multi-part changes
-   - Keep each line under 72 chars
+4. Add a **body** if the change is complex (one blank line after subject):
+   - Explain what changed and why, not how
+   - Bullet points OK, max 72 chars per line
 
-5. Always end with:
+5. Always append:
    ```
    Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
    ```
 
-6. Stage all relevant modified/new files (avoid `.env`, secrets, binaries). Then commit.
+6. Run `git add .` to stage everything, then run `git commit -m "<message>"` using a HEREDOC so multi-line messages are formatted correctly.
 
-Do not print anything else — only make the tool calls to stage and commit.
+Do not print anything — only make the tool calls.
